@@ -1,34 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { fetchWeatherData } from './services/OpenWeatherMapAPI';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { WelcomeScreen } from './src/screens/WelcomeScreen';
+import { LocalWeather } from './src/screens/LocalWeather';
+import { SearchWeather } from './src/screens/SearchWeather';
+import { Forecast } from './src/screens/Forecast';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [weatherData, setWeatherData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchWeatherData('London');
-      console.log(data);
-      setWeatherData(data);
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="WelcomeScreen">
+        <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+        <Stack.Screen name="LocalWeather" component={LocalWeather} />
+        <Stack.Screen name="SearchWeather" component={SearchWeather} />
+        <Stack.Screen name="Forecast" component={Forecast} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
