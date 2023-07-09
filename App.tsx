@@ -12,7 +12,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="WelcomeScreen">
-        <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <Stack.Screen 
+          name="WelcomeScreen" 
+          component={WelcomeScreen} 
+          options={{ headerShown: false }} // This line hides the header
+        />
         <Stack.Screen name="LocalWeather" component={LocalWeather} />
         <Stack.Screen name="SearchWeather" component={SearchWeather} />
         <Stack.Screen name="Forecast" component={Forecast} />
