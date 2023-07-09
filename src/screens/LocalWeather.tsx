@@ -35,23 +35,23 @@ export const LocalWeather = () => {
         style={styles.searchbar}
       />
       <Card style={styles.card}>
-        <Card.Content>
-          <Title>Weather in {searchQuery}</Title>
-          <Paragraph>{weatherData?.current.temp - 273.15}°C</Paragraph>
-          <Paragraph style={styles.paragraph}>
-           Weather: {weatherData?.current.weather[0].main}
-          </Paragraph>
-          <Paragraph style={styles.paragraph}>
-           Description: {weatherData?.current.weather[0].description}
-          </Paragraph>
-          <Paragraph style={styles.paragraph}>
-           Rain: {isRaining ? 'Yes' : 'No'}
-         </Paragraph>
-          <Paragraph style={styles.paragraph}>
-         Chance of Rain: {weatherData?.hourly[0].pop * 100}%
-         </Paragraph>
-        </Card.Content>
-      </Card>
+  <Card.Content>
+    <Title>Weather in {searchQuery}</Title>
+    <Paragraph>{((weatherData?.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Weather: {weatherData?.current.weather[0].main}
+    </Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Description: {weatherData?.current.weather[0].description}
+    </Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Rain: {isRaining ? 'Yes' : 'No'}
+    </Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Chance of Rain: {weatherData?.hourly[0].pop * 100}%
+    </Paragraph>
+  </Card.Content>
+</Card>
 
       <Button mode="contained" onPress={fetchWeather} style={styles.button}>
         Get Weather
