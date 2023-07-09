@@ -28,15 +28,23 @@ export const LocalWeather = () => {
         value={searchQuery}
         style={styles.searchbar}
       />
-      <Button mode="contained" onPress={fetchWeather}>
+      <Card style={styles.card}>
+  <Card.Content>
+    <Title style={styles.title}>Weather in {weatherData?.name}</Title>
+    <Paragraph style={styles.paragraph}>
+      Temperature: {weatherData?.main.temp}°C
+    </Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Rain: {weatherData?.rain ? 'Yes' : 'No'}
+    </Paragraph>
+    <Paragraph style={styles.paragraph}>
+      Chance of Rain: {weatherData?.pop}%
+    </Paragraph>
+  </Card.Content>
+</Card>
+      <Button mode="contained" onPress={fetchWeather} style={styles.button}>
         Get Weather
       </Button>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Weather in {weatherData?.name}</Title>
-          <Paragraph>{weatherData?.main.temp}°C</Paragraph>
-        </Card.Content>
-      </Card>
       <Snackbar
         visible={error !== null}
         onDismiss={() => setError(null)}
@@ -55,12 +63,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
   },
   searchbar: {
+    marginTop: 30,
     marginBottom: 20,
   },
   card: {
+    flex: 1,
+    marginTop: 20,
+    margin: 20,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#3F51B5',
+    marginBottom: 10,
+  },
+  paragraph: {
+    fontSize: 20,
+    marginBottom: 20,
+    color: '#333',
+  },
+  button: {
+    borderColor: '#3F51B5',
+    color: '#3F51B5',
     marginTop: 20,
   },
 });
