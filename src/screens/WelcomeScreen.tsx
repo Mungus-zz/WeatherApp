@@ -2,8 +2,20 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
+import { StackNavigationProp } from '@react-navigation/stack'; // Import the type
+import { RootStackParamList } from '../../types';
 
-export const WelcomeScreen = () => {
+
+type WelcomeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'WelcomeScreen'
+>;
+
+type Props = {
+  navigation: WelcomeScreenNavigationProp;
+};
+
+export const WelcomeScreen = ({ navigation }: Props) => { // Destructure navigation from props
   return (
     <View style={styles.container}>
       <LottieView
@@ -17,12 +29,16 @@ export const WelcomeScreen = () => {
           <Card.Content>
             <Title style={styles.title}>It's Gon' Rain?</Title>
             <Paragraph style={styles.paragraph}>
-              Here you can check the current weather, search for weather in different locations,
-              and see a forecast for the next few days.
+              you should check fr tho
             </Paragraph>
           </Card.Content>
           <Card.Actions>
-            <Button mode="outlined" style={styles.button} onPress={() => console.log('Pressed')}>Get Started</Button>
+            <Button 
+              style={styles.button} 
+              onPress={() => navigation.navigate('LocalWeather')} // Navigate to LocalWeather screen when pressed
+            >
+              aight bet
+            </Button>
           </Card.Actions>
         </Card>
       </View>
