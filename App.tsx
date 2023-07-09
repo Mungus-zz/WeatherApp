@@ -6,6 +6,7 @@ import { LocalWeather } from './src/screens/LocalWeather';
 import { SearchWeather } from './src/screens/SearchWeather';
 import { Forecast } from './src/screens/Forecast';
 
+
 // Define the list of screens in your stack navigator
 export type RootStackParamList = {
   WelcomeScreen: undefined;

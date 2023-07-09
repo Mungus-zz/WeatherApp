@@ -20,6 +20,12 @@ export const LocalWeather = () => {
     }
   };
 
+  // Check if it's currently raining
+  const isRaining = weatherData?.current?.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));
+
+  // Get the current probability of precipitation
+  const pop = weatherData?.current?.pop;
+
   return (
     <View style={styles.container}>
       <Searchbar
@@ -29,19 +35,24 @@ export const LocalWeather = () => {
         style={styles.searchbar}
       />
       <Card style={styles.card}>
-  <Card.Content>
-    <Title style={styles.title}>Weather in {weatherData?.name}</Title>
-    <Paragraph style={styles.paragraph}>
-      Temperature: {weatherData?.main.temp}°C
-    </Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Rain: {weatherData?.rain ? 'Yes' : 'No'}
-    </Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Chance of Rain: {weatherData?.pop}%
-    </Paragraph>
-  </Card.Content>
-</Card>
+        <Card.Content>
+          <Title>Weather in {searchQuery}</Title>
+          <Paragraph>{weatherData?.current.temp - 273.15}°C</Paragraph>
+          <Paragraph style={styles.paragraph}>
+           Weather: {weatherData?.current.weather[0].main}
+          </Paragraph>
+          <Paragraph style={styles.paragraph}>
+           Description: {weatherData?.current.weather[0].description}
+          </Paragraph>
+          <Paragraph style={styles.paragraph}>
+           Rain: {isRaining ? 'Yes' : 'No'}
+         </Paragraph>
+          <Paragraph style={styles.paragraph}>
+         Chance of Rain: {weatherData?.hourly[0].pop * 100}%
+         </Paragraph>
+        </Card.Content>
+      </Card>
+
       <Button mode="contained" onPress={fetchWeather} style={styles.button}>
         Get Weather
       </Button>
