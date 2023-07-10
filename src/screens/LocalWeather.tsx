@@ -44,6 +44,11 @@ const styles = StyleSheet.create({
     color: '#3F51B5',
     fontWeight: 'bold',
   },
+  alert: {
+    fontSize: 20,
+    color: '#ff0000',
+    fontWeight: 'bold',
+  },
 });
 
 
@@ -63,7 +68,7 @@ export const LocalWeather = () => {
     }
   };
 
-  let isDay, timeOfDay, weatherCondition, animation, isRaining, maxChanceOfRain = 0;
+  let isDay, timeOfDay, weatherCondition, animation, isRaining, chanceOfRain = 0;
 
 if (weatherData) {
   isRaining = weatherData.current.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));
@@ -76,10 +81,19 @@ if (weatherData) {
 
   animation = weatherConditions[timeOfDay as 'day' | 'night'][weatherCondition as WeatherConditionCode];
 
-  // Calculate the maximum chance of rain for the rest of the day
-  const restOfDay = weatherData.hourly.filter((hour: { dt: number }) => hour.dt > currentTime);
-  maxChanceOfRain = Math.max(...restOfDay.map((hour: { pop: number }) => hour.pop));
+  // Get the chance of rain for the current hour
+  chanceOfRain = weatherData.hourly[0].pop;
 }
+
+let alerts = null;
+if (weatherData && weatherData.alerts) {
+  alerts = weatherData.alerts.map((alert: { event: string, description: string }) => (
+    <Paragraph style={styles.alert}>
+      Alert: {alert.event} - {alert.description}
+    </Paragraph>
+  ));
+}
+
 
 return (
   <View style={styles.container}>
@@ -95,32 +109,33 @@ return (
     {weatherData && (
       <Card style={styles.dataCard}>
         <ScrollView>
-        <Card.Content>
-  <Title style={styles.title}>Weather in {searchQuery}</Title>
-  <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
-  <Paragraph style={styles.paragraph}>
-    Weather: {weatherData.current.weather[0].main}
-  </Paragraph>
-  <Paragraph style={styles.paragraph}>
-    Description: {weatherData.current.weather[0].description}
-  </Paragraph>
-  <Paragraph style={styles.paragraph}>
-    Rain: {isRaining ? 'Yes' : 'No'}
-  </Paragraph>
-  <Paragraph style={styles.paragraph}>
-    Maximum Chance of Rain for the Rest of the Day: {maxChanceOfRain * 100}%
-  </Paragraph>
-</Card.Content>
+         <Card.Content>
+            <Title style={styles.title}>Weather in {searchQuery}</Title>
+              <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
+              <Paragraph style={styles.paragraph}>
+                Weather: {weatherData.current.weather[0].main}
+              </Paragraph>
+             <Paragraph style={styles.paragraph}>
+                Description: {weatherData.current.weather[0].description}
+             </Paragraph>
+             <Paragraph style={styles.paragraph}>
+                Rain: {isRaining ? 'Yes' : 'No'}
+             </Paragraph>
+             <Paragraph style={styles.paragraph}>
+               Chance of Rain for the Current Hour: {chanceOfRain * 100}%
+             </Paragraph>
+          </Card.Content>
         </ScrollView>
       </Card>
     )}
     {animation && (
-      <Card style={styles.animationCard}>
-        <Card.Content>
-          <LottieView source={animation} autoPlay loop style={styles.lottie} />
-        </Card.Content>
-      </Card>
-    )}
+     <Card style={styles.animationCard}>
+       <Card.Content>
+         <Title style={styles.title}>Chance of Rain: {chanceOfRain * 100}%</Title>
+         <LottieView source={animation} autoPlay loop style={styles.lottie} />
+       </Card.Content>
+     </Card>
+)}
     <Snackbar
       visible={error !== null}
       onDismiss={() => setError(null)}
@@ -132,5 +147,5 @@ return (
       {error}
     </Snackbar>
   </View>
-);
-    }
+  );
+};
