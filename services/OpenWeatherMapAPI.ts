@@ -23,7 +23,6 @@ export const fetchWeatherData = async (city: string) => {
   try {
     const { lat, lon } = await getCoordinates(city);
     const response = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_MAP_API_KEY}`);
-    console.log(response.data);  // Log the response data
     return response.data;
   } catch (error) {
     console.error(error);

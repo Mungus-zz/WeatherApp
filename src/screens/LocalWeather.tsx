@@ -1,58 +1,91 @@
+import LottieView from 'lottie-react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet} from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Button, Snackbar } from 'react-native-paper';
-import { useWeatherStore } from '../store/weatherStore'; // Import the store
+import { useWeatherStore } from '../store/weatherStore'; 
 import { fetchWeatherData } from '../../services/OpenWeatherMapAPI';
+import { weatherConditions, WeatherConditionCode } from '../animations/weatherAnimation';
 
 export const LocalWeather = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { weatherData, setWeatherData } = useWeatherStore(); // Use the store
-  const [error, setError] = useState<string | null>(null); // Declare error state
+  const { weatherData, setWeatherData } = useWeatherStore(); 
+  const [error, setError] = useState<string | null>(null); 
 
-  const onChangeSearch = (query: string) => setSearchQuery(query); // Specify the type of the query parameter
+  const onChangeSearch = (query: string) => setSearchQuery(query); 
 
   const fetchWeather = async () => {
     try {
       const data = await fetchWeatherData(searchQuery);
       setWeatherData(data);
     } catch (err) {
-      setError('Failed to fetch weather data. Please try again.'); // Set error message
+      setError('Failed to fetch weather data. Please try again.'); 
     }
   };
 
-  // Check if it's currently raining
-  const isRaining = weatherData?.current?.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));
+  let isDay, timeOfDay, weatherCondition, animation, isRaining;
 
-  // Get the current probability of precipitation
-  const pop = weatherData?.current?.pop;
+  if (weatherData) {
+    isRaining = weatherData.current.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));
+
+    const currentTime = Math.floor(new Date().getTime() / 1000);
+    isDay = currentTime > weatherData.current.sunrise && currentTime < weatherData.current.sunset;
+    timeOfDay = isDay ? 'day' : 'night';
+
+weatherCondition = weatherData.current.weather[0].description.toLowerCase();
+
+    animation = weatherConditions[timeOfDay as 'day' | 'night'][weatherCondition as WeatherConditionCode];
+  }
 
   return (
     <View style={styles.container}>
+      <KeyboardAwareScrollView
+    style={styles.container}
+    resetScrollToCoords={{ x: 0, y: 0 }}
+    contentContainerStyle={styles.container}
+    scrollEnabled={false}
+  >
       <Searchbar
         placeholder="Search for a location"
         onChangeText={onChangeSearch}
         value={searchQuery}
         style={styles.searchbar}
       />
-      <Card style={styles.card}>
-  <Card.Content>
-    <Title>Weather in {searchQuery}</Title>
-    <Paragraph>{((weatherData?.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Weather: {weatherData?.current.weather[0].main}
-    </Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Description: {weatherData?.current.weather[0].description}
-    </Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Rain: {isRaining ? 'Yes' : 'No'}
-    </Paragraph>
-    <Paragraph style={styles.paragraph}>
-      Chance of Rain: {weatherData?.hourly[0].pop * 100}%
-    </Paragraph>
-  </Card.Content>
-</Card>
-
+      <View style={styles.cardsContainer}>
+  {animation && (
+    <Card style={styles.card}>
+      <Card.Content>
+      <LottieView source={animation} autoPlay loop style={{ width: '100%', height: '100%' }} />
+      </Card.Content>
+    </Card>
+  )}
+  <Card style={styles.card}>
+    <Card.Content>
+      <Title>Weather in {searchQuery}</Title>
+      {weatherData && (
+        <>
+          <View style={styles.weatherInfo}>
+            <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
+            <Paragraph style={styles.paragraph}>
+              Weather: {weatherData.current.weather[0].main}
+            </Paragraph>
+            <Paragraph style={styles.paragraph}>
+              Description: {weatherData.current.weather[0].description}
+            </Paragraph>
+            <Paragraph style={styles.paragraph}>
+              Rain: {isRaining ? 'Yes' : 'No'}
+            </Paragraph>
+            <Paragraph style={styles.paragraph}>
+              Chance of Rain: {weatherData.hourly[0].pop * 100}%
+            </Paragraph>
+          </View>
+        </>
+      )}
+    </Card.Content>
+  </Card>
+</View>
+</KeyboardAwareScrollView>
+      
       <Button mode="contained" onPress={fetchWeather} style={styles.button}>
         Get Weather
       </Button>
@@ -70,6 +103,7 @@ export const LocalWeather = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -79,9 +113,19 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   },
+  lottie: {
+    width: 800,
+    height: 800,
+    alignSelf: 'center',
+  },
+  cardsContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
   card: {
     flex: 1,
-    marginTop: 20,
+    justifyContent: 'center',
     margin: 20,
     padding: 20,
     backgroundColor: '#FFFFFF',
@@ -108,4 +152,7 @@ const styles = StyleSheet.create({
     color: '#3F51B5',
     marginTop: 20,
   },
+  weatherInfo: {
+    flexDirection: 'column',
+  }
 });
