@@ -1,11 +1,12 @@
 import LottieView from 'lottie-react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import React, { useState } from 'react';
-import { View, StyleSheet} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Searchbar, Card, Title, Paragraph, Button, Snackbar } from 'react-native-paper';
 import { useWeatherStore } from '../store/weatherStore'; 
 import { fetchWeatherData } from '../../services/OpenWeatherMapAPI';
 import { weatherConditions, WeatherConditionCode } from '../animations/weatherAnimation';
+import { ScrollView } from 'react-native';
+
 
 export const LocalWeather = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,63 +33,51 @@ export const LocalWeather = () => {
     isDay = currentTime > weatherData.current.sunrise && currentTime < weatherData.current.sunset;
     timeOfDay = isDay ? 'day' : 'night';
 
-weatherCondition = weatherData.current.weather[0].description.toLowerCase();
+    weatherCondition = weatherData.current.weather[0].description.toLowerCase();
 
     animation = weatherConditions[timeOfDay as 'day' | 'night'][weatherCondition as WeatherConditionCode];
   }
 
   return (
     <View style={styles.container}>
-      <KeyboardAwareScrollView
-    style={styles.container}
-    resetScrollToCoords={{ x: 0, y: 0 }}
-    contentContainerStyle={styles.container}
-    scrollEnabled={false}
-  >
       <Searchbar
         placeholder="Search for a location"
         onChangeText={onChangeSearch}
         value={searchQuery}
         style={styles.searchbar}
       />
-      <View style={styles.cardsContainer}>
-  {animation && (
-    <Card style={styles.card}>
-      <Card.Content>
-      <LottieView source={animation} autoPlay loop style={{ width: '100%', height: '100%' }} />
-      </Card.Content>
-    </Card>
-  )}
-  <Card style={styles.card}>
-    <Card.Content>
-      <Title>Weather in {searchQuery}</Title>
-      {weatherData && (
-        <>
-          <View style={styles.weatherInfo}>
-            <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
-            <Paragraph style={styles.paragraph}>
-              Weather: {weatherData.current.weather[0].main}
-            </Paragraph>
-            <Paragraph style={styles.paragraph}>
-              Description: {weatherData.current.weather[0].description}
-            </Paragraph>
-            <Paragraph style={styles.paragraph}>
-              Rain: {isRaining ? 'Yes' : 'No'}
-            </Paragraph>
-            <Paragraph style={styles.paragraph}>
-              Chance of Rain: {weatherData.hourly[0].pop * 100}%
-            </Paragraph>
-          </View>
-        </>
-      )}
-    </Card.Content>
-  </Card>
-</View>
-</KeyboardAwareScrollView>
-      
       <Button mode="contained" onPress={fetchWeather} style={styles.button}>
         Get Weather
       </Button>
+      {weatherData && (
+  <Card style={styles.dataCard}>
+    <ScrollView>
+      <Card.Content>
+        <Title>Weather in {searchQuery}</Title>
+        <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
+        <Paragraph style={styles.paragraph}>
+          Weather: {weatherData.current.weather[0].main}
+        </Paragraph>
+        <Paragraph style={styles.paragraph}>
+          Description: {weatherData.current.weather[0].description}
+        </Paragraph>
+        <Paragraph style={styles.paragraph}>
+          Rain: {isRaining ? 'Yes' : 'No'}
+        </Paragraph>
+        <Paragraph style={styles.paragraph}>
+          Chance of Rain: {weatherData.hourly[0].pop * 100}%
+        </Paragraph>
+      </Card.Content>
+    </ScrollView>
+  </Card>
+)}
+      {animation && (
+        <Card style={styles.animationCard}>
+          <Card.Content>
+            <LottieView source={animation} autoPlay loop style={styles.lottie} />
+          </Card.Content>
+        </Card>
+      )}
       <Snackbar
         visible={error !== null}
         onDismiss={() => setError(null)}
@@ -103,7 +92,6 @@ weatherCondition = weatherData.current.weather[0].description.toLowerCase();
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -113,46 +101,24 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
   },
+  button: {
+    marginBottom: 20,
+  },
+  dataCard: {
+    flex: 1,
+    marginBottom: 20,
+  },
+  animationCard: {
+    flex: 3,
+  },
   lottie: {
-    width: 800,
-    height: 800,
+    width: '100%',
+    height: '100%',
     alignSelf: 'center',
-  },
-  cardsContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  card: {
-    flex: 1,
-    justifyContent: 'center',
-    margin: 20,
-    padding: 20,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#3F51B5',
-    marginBottom: 10,
   },
   paragraph: {
     fontSize: 20,
     marginBottom: 20,
     color: '#333',
   },
-  button: {
-    borderColor: '#3F51B5',
-    color: '#3F51B5',
-    marginTop: 20,
-  },
-  weatherInfo: {
-    flexDirection: 'column',
-  }
 });
