@@ -11,21 +11,17 @@ import { styles } from '../../styles';
 
 export const LocalWeather = () => {
   const { weatherData, setWeatherData } = useWeatherStore(); 
-  console.log('Weather data at the beginning of render:', weatherData); // Add this line
   const [error, setError] = useState<string | null>(null); 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    console.log('Updated weather data:', weatherData);
   }, [weatherData]); // Add this useEffect hook
 
   const fetchWeather = async (lat: number, lon: number) => {
     try {
       const data = await fetchWeatherData(lat, lon);
-      console.log('Fetched data:', data); // Log the fetched data
       setSearchQuery(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`);
       setWeatherData(data);
-      console.log('Weather data after setWeatherData:', weatherData);
     } catch (err) {
       setError('Failed to fetch weather data. Please try again.'); 
     }
@@ -34,7 +30,6 @@ export const LocalWeather = () => {
   let isDay, timeOfDay, weatherCondition, animation, isRaining, chanceOfRain = 0;
   let isNight = false; // Initialize isNight to false
 
-  console.log('Weather data:', weatherData); // Add this line
   
   if (weatherData) {
     isRaining = weatherData.current.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));

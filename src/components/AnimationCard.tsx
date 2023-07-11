@@ -25,14 +25,8 @@ interface WeatherConditions {
 const weatherConditionsTyped = weatherConditions as WeatherConditions;
 
 export const AnimationCard: React.FC<AnimationCardProps> = ({ weatherCode, isNight, chanceOfRain }) => {
-  console.log('Rendering AnimationCard');
   const animation = isNight ? weatherConditionsTyped.night[weatherCode.toString()] : weatherConditionsTyped.day[weatherCode.toString()];
 
-  // Log the animation and props
-  console.log('Animation:', animation);
-  console.log('Props:', { weatherCode, isNight, chanceOfRain });
-
-  console.log('Rendering LottieView with source:', animation);
 
   return (
     <Card style={styles.animationCard}>
