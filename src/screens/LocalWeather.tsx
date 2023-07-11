@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 import { Snackbar } from 'react-native-paper'
 import { useWeatherStore } from '../store/weatherStore'; 
 import { fetchWeatherData } from '../../services/OpenWeatherMapAPI';
@@ -42,8 +42,8 @@ export const LocalWeather = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <LocationSearchBar 
+    <SafeAreaView style={styles.container}>
+    <LocationSearchBar 
         onLocationChange={fetchWeather} 
         searchQuery={searchQuery} 
         setSearchQuery={setSearchQuery}
@@ -80,6 +80,6 @@ export const LocalWeather = () => {
       >
         {error}
       </Snackbar>
-    </View>
+      </SafeAreaView>
   );
 };
