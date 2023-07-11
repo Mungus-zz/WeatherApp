@@ -6,6 +6,9 @@ import { useWeatherStore } from '../store/weatherStore';
 import { fetchWeatherData } from '../../services/OpenWeatherMapAPI';
 import { weatherConditions, WeatherConditionCode } from '../animations/weatherAnimation';
 import { ScrollView } from 'react-native';
+import LocationSearchBar from '../components/LocationSearchBar';
+import * as Location from 'expo-location';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -51,22 +54,33 @@ const styles = StyleSheet.create({
   },
 });
 
+async function getLocation() {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') {
+    console.error('Permission to access location was denied');
+    return;
+  }
+
+  let location = await Location.getCurrentPositionAsync({});
+  console.log(location);
+}
+
 
 export const LocalWeather = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const { weatherData, setWeatherData } = useWeatherStore(); 
   const [error, setError] = useState<string | null>(null); 
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const onChangeSearch = (query: string) => setSearchQuery(query); 
-
-  const fetchWeather = async () => {
+  const fetchWeather = async (lat: number, lon: number) => {
     try {
-      const data = await fetchWeatherData(searchQuery);
+      const data = await fetchWeatherData(lat, lon);
+      setSearchQuery(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`);
       setWeatherData(data);
     } catch (err) {
       setError('Failed to fetch weather data. Please try again.'); 
     }
   };
+
 
   let isDay, timeOfDay, weatherCondition, animation, isRaining, chanceOfRain = 0;
 
@@ -97,45 +111,48 @@ if (weatherData && weatherData.alerts) {
 
 return (
   <View style={styles.container}>
-    <Searchbar
-      placeholder="Search for a location"
-      onChangeText={onChangeSearch}
-      value={searchQuery}
-      style={styles.searchbar}
+    <LocationSearchBar 
+      onLocationChange={fetchWeather} 
+      searchQuery={searchQuery} 
+      setSearchQuery={setSearchQuery}
     />
-    <Button mode="contained" onPress={fetchWeather} style={styles.button}>
-      Get Weather
-    </Button>
-    {weatherData && (
-      <Card style={styles.dataCard}>
-        <ScrollView>
-         <Card.Content>
-            <Title style={styles.title}>Weather in {searchQuery}</Title>
+
+    {
+      weatherData && (
+        <Card style={styles.dataCard}>
+          <ScrollView>
+            <Card.Content>
+              <Title style={styles.title}>Weather for {searchQuery}</Title>
               <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
               <Paragraph style={styles.paragraph}>
                 Weather: {weatherData.current.weather[0].main}
               </Paragraph>
-             <Paragraph style={styles.paragraph}>
+              <Paragraph style={styles.paragraph}>
                 Description: {weatherData.current.weather[0].description}
-             </Paragraph>
-             <Paragraph style={styles.paragraph}>
+              </Paragraph>
+              <Paragraph style={styles.paragraph}>
                 Rain: {isRaining ? 'Yes' : 'No'}
-             </Paragraph>
-             <Paragraph style={styles.paragraph}>
-               Chance of Rain for the Current Hour: {chanceOfRain * 100}%
-             </Paragraph>
+              </Paragraph>
+              <Paragraph style={styles.paragraph}>
+                Chance of Rain for the Current Hour: {chanceOfRain * 100}%
+              </Paragraph>
+            </Card.Content>
+          </ScrollView>
+        </Card>
+      )
+    }
+
+    {
+      animation && (
+        <Card style={styles.animationCard}>
+          <Card.Content>
+            <Title style={styles.title}>Chance of Rain: {chanceOfRain * 100}%</Title>
+            <LottieView source={animation} autoPlay loop style={styles.lottie} />
           </Card.Content>
-        </ScrollView>
-      </Card>
-    )}
-    {animation && (
-     <Card style={styles.animationCard}>
-       <Card.Content>
-         <Title style={styles.title}>Chance of Rain: {chanceOfRain * 100}%</Title>
-         <LottieView source={animation} autoPlay loop style={styles.lottie} />
-       </Card.Content>
-     </Card>
-)}
+        </Card>
+      )
+    }
+
     <Snackbar
       visible={error !== null}
       onDismiss={() => setError(null)}
@@ -147,5 +164,5 @@ return (
       {error}
     </Snackbar>
   </View>
-  );
+);
 };
