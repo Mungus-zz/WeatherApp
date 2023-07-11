@@ -1,15 +1,15 @@
 import React from 'react';
 import { Searchbar } from 'react-native-paper';
 import * as Location from 'expo-location';
-import { getCoordinates } from '../../services/OpenWeatherMapAPI'; // replace './OpenWeatherMapAPI' with the actual path to this file
+import { getCoordinates } from '../../services/OpenWeatherMapAPI';
 
 interface LocationSearchBarProps {
     onLocationChange: (latitude: number, longitude: number) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
-  }
+}
 
-  const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange, searchQuery, setSearchQuery }) => {
+const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange, searchQuery, setSearchQuery }) => {
 
   const fetchCurrentLocationWeather = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
