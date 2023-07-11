@@ -4,19 +4,36 @@ import { Card, Title } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 import { styles } from '../../styles';
 
-import { weatherConditions, WeatherConditionCode } from '../animations/weatherAnimation';
+import { weatherConditions } from '../animations/weatherAnimation';
 
 // Define a type for your animation 
 type AnimationSource = any; // Replace 'any' with the actual type of your animation source
 
 interface AnimationCardProps {
-  weatherCondition: WeatherConditionCode;
+  weatherCode: number; // Use the weather code instead of the weather condition
   isNight: boolean;
   chanceOfRain: number;
 }
 
-export const AnimationCard: React.FC<AnimationCardProps> = ({ weatherCondition, isNight, chanceOfRain }) => {
-  const animation = isNight ? weatherConditions.night[weatherCondition] : weatherConditions.day[weatherCondition];
+// Define the type of the weatherConditions object
+interface WeatherConditions {
+  day: { [key: string]: AnimationSource };
+  night: { [key: string]: AnimationSource };
+}
+
+// Cast the imported weatherConditions object to the WeatherConditions type
+const weatherConditionsTyped = weatherConditions as WeatherConditions;
+
+export const AnimationCard: React.FC<AnimationCardProps> = ({ weatherCode, isNight, chanceOfRain }) => {
+  console.log('Rendering AnimationCard');
+  const animation = isNight ? weatherConditionsTyped.night[weatherCode.toString()] : weatherConditionsTyped.day[weatherCode.toString()];
+
+  // Log the animation and props
+  console.log('Animation:', animation);
+  console.log('Props:', { weatherCode, isNight, chanceOfRain });
+
+  console.log('Rendering LottieView with source:', animation);
+
   return (
     <Card style={styles.animationCard}>
       <Card.Content>

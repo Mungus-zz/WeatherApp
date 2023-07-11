@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, SafeAreaView } from 'react-native';
 import { Snackbar } from 'react-native-paper'
 import { useWeatherStore } from '../store/weatherStore'; 
@@ -11,26 +11,37 @@ import { styles } from '../../styles';
 
 export const LocalWeather = () => {
   const { weatherData, setWeatherData } = useWeatherStore(); 
+  console.log('Weather data at the beginning of render:', weatherData); // Add this line
   const [error, setError] = useState<string | null>(null); 
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    console.log('Updated weather data:', weatherData);
+  }, [weatherData]); // Add this useEffect hook
 
   const fetchWeather = async (lat: number, lon: number) => {
     try {
       const data = await fetchWeatherData(lat, lon);
+      console.log('Fetched data:', data); // Log the fetched data
       setSearchQuery(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`);
       setWeatherData(data);
+      console.log('Weather data after setWeatherData:', weatherData);
     } catch (err) {
       setError('Failed to fetch weather data. Please try again.'); 
     }
   };
 
   let isDay, timeOfDay, weatherCondition, animation, isRaining, chanceOfRain = 0;
+  let isNight = false; // Initialize isNight to false
 
+  console.log('Weather data:', weatherData); // Add this line
+  
   if (weatherData) {
     isRaining = weatherData.current.weather.some((condition: { main: string }) => condition.main.toLowerCase().includes('rain'));
 
     const currentTime = Math.floor(new Date().getTime() / 1000);
     isDay = currentTime > weatherData.current.sunrise && currentTime < weatherData.current.sunset;
+    isNight = !isDay;
     timeOfDay = isDay ? 'day' : 'night';
 
     weatherCondition = weatherData.current.weather[0].description.toLowerCase();
@@ -43,33 +54,29 @@ export const LocalWeather = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <LocationSearchBar 
+      <LocationSearchBar 
         onLocationChange={fetchWeather} 
         searchQuery={searchQuery} 
         setSearchQuery={setSearchQuery}
       />
-
-      {
-        weatherData && (
-          <WeatherDataCard 
-            weatherData={weatherData} 
-            searchQuery={searchQuery} 
-            isRaining={isRaining} 
-            chanceOfRain={chanceOfRain}
-          />
-        )
-      }
-
-      {
-        animation && (
-          <AnimationCard 
-            weatherCondition={weatherCondition as WeatherConditionCode} 
-            isNight={!isDay} 
-            chanceOfRain={chanceOfRain}
-          />
-        )
-      }
-
+  
+      {weatherData && (
+        <WeatherDataCard 
+          weatherData={weatherData} 
+          searchQuery={searchQuery} 
+          isRaining={isRaining} 
+          chanceOfRain={chanceOfRain}
+        />
+      )}
+  
+      {weatherData && (
+        <AnimationCard
+          weatherCode={parseInt(weatherData.current.weather[0].id)}
+          isNight={isNight}
+          chanceOfRain={chanceOfRain}
+        />
+      )}
+  
       <Snackbar
         visible={error !== null}
         onDismiss={() => setError(null)}
@@ -80,6 +87,6 @@ export const LocalWeather = () => {
       >
         {error}
       </Snackbar>
-      </SafeAreaView>
+    </SafeAreaView>
   );
-};
+      }
