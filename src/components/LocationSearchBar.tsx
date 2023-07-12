@@ -1,47 +1,48 @@
-import React from 'react';
-import { Searchbar } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
-import { getCoordinates } from '../../services/OpenWeatherMapAPI';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 interface LocationSearchBarProps {
     onLocationChange: (latitude: number, longitude: number) => void;
-    searchQuery: string;
-    setSearchQuery: (query: string) => void;
 }
 
-const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange, searchQuery, setSearchQuery }) => {
+const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange }) => {
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const fetchCurrentLocationWeather = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('Permission to access location was denied');
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    onLocationChange(location.coords.latitude, location.coords.longitude);
-  };
-
-  const fetchWeatherBySearchQuery = async () => {
-    if (searchQuery) {
-      try {
-        const { lat, lon } = await getCoordinates(searchQuery);
-        onLocationChange(lat, lon);
-      } catch (error) {
-        console.error(error);
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
       }
+
+      let location = await Location.getCurrentPositionAsync({});
+      onLocationChange(location.coords.latitude, location.coords.longitude);
+    })();
+  }, [onLocationChange]);
+
+  const handleSelect = async (data: any, details: any = null) => {
+    if (details && details.geometry) {
+      const { lat, lng } = details.geometry.location;
+      onLocationChange(lat, lng);
     }
   };
 
   return (
-    <Searchbar
-      placeholder="Search for a location"
-      onChangeText={setSearchQuery}
-      value={searchQuery}
-      icon="crosshairs-gps"
-      onIconPress={fetchCurrentLocationWeather}
-      onSubmitEditing={fetchWeatherBySearchQuery} // fetch weather data when the user submits the search
-    />
+    <GooglePlacesAutocomplete
+  placeholder='Search for a location'
+  onPress={handleSelect}
+  query={{
+    key: GOOGLE_MAPS_API_KEY,
+    language: 'en',
+  }}
+  nearbyPlacesAPI='GooglePlacesSearch'
+  debounce={400}
+  fetchDetails={true}
+/>
+
   );
 };
 

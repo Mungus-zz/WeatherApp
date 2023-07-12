@@ -7,16 +7,16 @@ export const styles = StyleSheet.create({
     paddingTop: 50,
   },
   searchbar: {
-    marginTop: 80,
-    marginBottom: 20,
+    marginTop: 50,
+    marginBottom: 10,
   },
   button: {
     marginBottom: 20,
   },
   dataCard: {
     flex: 1,
-    marginBottom: 20,
-    padding: 20,
+    marginBottom: 10,
+    padding: 10,
   },
   animationCard: {
     flex: 3,

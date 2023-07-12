@@ -20,7 +20,6 @@ export const LocalWeather = () => {
   const fetchWeather = async (lat: number, lon: number) => {
     try {
       const data = await fetchWeatherData(lat, lon);
-      setSearchQuery(`Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`);
       setWeatherData(data);
     } catch (err) {
       setError('Failed to fetch weather data. Please try again.'); 
@@ -50,10 +49,9 @@ export const LocalWeather = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LocationSearchBar 
-        onLocationChange={fetchWeather} 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery}
-      />
+  onLocationChange={fetchWeather} 
+/>
+
   
       {weatherData && (
         <WeatherDataCard 
