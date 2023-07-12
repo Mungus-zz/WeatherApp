@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
 import { GOOGLE_MAPS_API_KEY } from '@env';
@@ -8,24 +8,27 @@ interface LocationSearchBarProps {
 }
 
 const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange }) => {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [autoUpdateLocation, setAutoUpdateLocation] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+  const fetchCurrentLocationWeather = async () => {
+    if (!autoUpdateLocation) {
+      return;
+    }
 
-      let location = await Location.getCurrentPositionAsync({});
-      onLocationChange(location.coords.latitude, location.coords.longitude);
-    })();
-  }, [onLocationChange]);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    onLocationChange(location.coords.latitude, location.coords.longitude);
+  };
 
   const handleSelect = async (data: any, details: any = null) => {
     if (details && details.geometry) {
       const { lat, lng } = details.geometry.location;
+      setAutoUpdateLocation(false);
       onLocationChange(lat, lng);
     }
   };
@@ -42,7 +45,6 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange 
   debounce={400}
   fetchDetails={true}
 />
-
   );
 };
 
