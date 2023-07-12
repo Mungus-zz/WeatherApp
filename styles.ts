@@ -16,10 +16,22 @@ export const styles = StyleSheet.create({
   dataCard: {
     flex: 1,
     marginBottom: 10,
-    padding: 10,
+    padding: 20, 
+    height: 'auto', 
+    width: '100%', 
   },
   animationCard: {
     flex: 3,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  temp: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
   lottie: {
     width: '100%',
