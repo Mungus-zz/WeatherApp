@@ -1,20 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import * as Location from 'expo-location';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 interface LocationSearchBarProps {
-    onLocationChange: (latitude: number, longitude: number) => void;
+  onLocationChange: (latitude: number, longitude: number, cityName: string) => void;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange }) => {
-  const [autoUpdateLocation, setAutoUpdateLocation] = useState(true);
+const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange, setSearchQuery }) => {
 
   const fetchCurrentLocationWeather = async () => {
-    if (!autoUpdateLocation) {
-      return;
-    }
-
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.error('Permission to access location was denied');
@@ -22,16 +18,20 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange 
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    onLocationChange(location.coords.latitude, location.coords.longitude);
+    onLocationChange(location.coords.latitude, location.coords.longitude, 'Current Location');
   };
 
   const handleSelect = async (data: any, details: any = null) => {
     if (details && details.geometry) {
       const { lat, lng } = details.geometry.location;
-      setAutoUpdateLocation(false);
-      onLocationChange(lat, lng);
+      const cityName = details.formatted_address; // Get the city name from the details object
+      console.log(cityName); // Add this line
+      onLocationChange(lat, lng, cityName); // Pass the city name as the third argument
+      setSearchQuery(details.formatted_address); // Update the search query with the selected location
     }
   };
+  
+  
 
   return (
     <GooglePlacesAutocomplete
@@ -45,6 +45,7 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange 
   debounce={400}
   fetchDetails={true}
 />
+
   );
 };
 

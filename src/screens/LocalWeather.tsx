@@ -13,13 +13,16 @@ export const LocalWeather = () => {
   const { weatherData, setWeatherData } = useWeatherStore(); 
   const [error, setError] = useState<string | null>(null); 
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [cityName, setCityName] = useState<string>(''); // Add this line
 
   useEffect(() => {
-  }, [weatherData]); 
+  }, [weatherData]); // Add this useEffect hook
 
-  const fetchWeather = async (lat: number, lon: number) => {
+  const fetchWeather = async (lat: number, lon: number, cityName: string) => {
+    console.log(cityName); // Add this line
     try {
       const data = await fetchWeatherData(lat, lon);
+      setCityName(cityName);
       setWeatherData(data);
     } catch (err) {
       setError('Failed to fetch weather data. Please try again.'); 
@@ -50,13 +53,14 @@ export const LocalWeather = () => {
     <SafeAreaView style={styles.container}>
       <LocationSearchBar 
   onLocationChange={fetchWeather} 
+  setSearchQuery={setSearchQuery}
 />
 
   
       {weatherData && (
         <WeatherDataCard 
           weatherData={weatherData} 
-          searchQuery={searchQuery} 
+          cityName={cityName} // Pass cityName to WeatherDataCard
           isRaining={isRaining} 
           chanceOfRain={chanceOfRain}
         />
@@ -82,4 +86,4 @@ export const LocalWeather = () => {
       </Snackbar>
     </SafeAreaView>
   );
-      }
+};

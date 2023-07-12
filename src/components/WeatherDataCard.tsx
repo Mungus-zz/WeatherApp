@@ -1,29 +1,20 @@
-// WeatherDataCard.tsx
 import React from 'react';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { ScrollView } from 'react-native';
 import { styles } from '../../styles';
 
-// Define a type for your weather data
-interface WeatherData {
-  current: {
-    temp: number;
-    weather: Array<{ main: string; description: string }>;
-  };
-}
-
 interface WeatherDataCardProps {
-  weatherData: WeatherData;
-  searchQuery: string;
+  weatherData: any;
+  cityName: string; // Replace searchQuery with cityName
   isRaining: boolean;
   chanceOfRain: number;
 }
 
-export const WeatherDataCard: React.FC<WeatherDataCardProps> = ({ weatherData, searchQuery, isRaining, chanceOfRain }) => (
+export const WeatherDataCard: React.FC<WeatherDataCardProps> = ({ weatherData, cityName, isRaining, chanceOfRain }) => (
   <Card style={styles.dataCard}>
     <ScrollView>
       <Card.Content>
-        <Title style={styles.title}>Weather for {searchQuery}</Title>
+      <Title style={styles.title}>Weather for {cityName || 'Loading...'}</Title>
         <Paragraph>{((weatherData.current.temp - 273.15) * 9/5 + 32).toFixed(2)}°F</Paragraph>
         <Paragraph style={styles.paragraph}>
           Weather: {weatherData.current.weather[0].main}
