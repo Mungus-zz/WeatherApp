@@ -15,7 +15,7 @@ export const LocalWeather = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-  }, [weatherData]); // Add this useEffect hook
+  }, [weatherData]); 
 
   const fetchWeather = async (lat: number, lon: number) => {
     try {

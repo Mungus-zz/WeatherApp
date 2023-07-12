@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Title, Paragraph, Button } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
-import { StackNavigationProp } from '@react-navigation/stack'; // Import the type
+import { StackNavigationProp } from '@react-navigation/stack'; 
 import { RootStackParamList } from '../../types';
 
 
