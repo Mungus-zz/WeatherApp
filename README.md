@@ -1,5 +1,5 @@
 # weatherapp
-Weather App initialized via Expo using react-native-svg, react-native-reanimated, react-native-paper
+Weather App initialized via Expo using react-native-paper & Lottie Files
 
 This is a weather application built with React Native and TypeScript. It uses the OpenWeatherMap API to fetch weather data based on the user's location. The application provides a detailed view of the current weather conditions, including temperature, weather description, and the chance of rain.
 
