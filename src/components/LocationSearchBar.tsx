@@ -35,18 +35,21 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({ onLocationChange,
 
   return (
     <GooglePlacesAutocomplete
-  placeholder='Search for a location'
-  onPress={handleSelect}
-  query={{
-    key: GOOGLE_MAPS_API_KEY,
-    language: 'en',
-  }}
-  nearbyPlacesAPI='GooglePlacesSearch'
-  debounce={400}
-  fetchDetails={true}
-/>
-
+      placeholder='Search for a location'
+      onPress={handleSelect}
+      query={{
+        key: GOOGLE_MAPS_API_KEY,
+        language: 'en',
+      }}
+      nearbyPlacesAPI='GooglePlacesSearch'
+      debounce={400}
+      fetchDetails={true}
+      styles={{
+        textInputContainer: {
+          marginBottom: 2, // Adjust this value as needed
+        },
+      }}
+    />
   );
 };
-
 export default LocationSearchBar;

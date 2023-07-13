@@ -7,21 +7,21 @@ export const styles = StyleSheet.create({
     paddingTop: 50,
   },
   searchbar: {
-    marginTop: 50,
-    marginBottom: 10,
+    marginBottom: 2,
   },
   button: {
     marginBottom: 20,
   },
   dataCard: {
-    flex: 1,
-    marginBottom: 10,
-    padding: 20, 
+    flex: 3,
+    marginBottom: 20,
+    marginTop: 2,
+    padding: 10, 
     height: 'auto', 
     width: '100%', 
   },
   animationCard: {
-    flex: 3,
+    flex: 2,
   },
   row: {
     flexDirection: 'row',
@@ -32,10 +32,11 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 10,
+    lineHeight: 30, 
   },
   lottie: {
-    width: '100%',
-    height: '100%',
+    width: '90%',
+    height: '90%',
     alignSelf: 'center',
   },
   paragraph: {
@@ -46,7 +47,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    marginBottom: 20,
+    marginBottom: 10,
     color: '#3F51B5',
     fontWeight: 'bold',
   },
